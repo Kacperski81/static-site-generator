@@ -12,26 +12,29 @@ from src.page_gen import generate_pages_recursive
 
 def main():
     # Get the root project directory
+    # use the sys.argv to grap the first CLI argument to the program savie ttit as the basepath 
+    basepath = "/"
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     static_dir = os.path.join(project_root, "static")
-    public_dir = os.path.join(project_root, "public")
+    docs_dir = os.path.join(project_root, "docs")
     template_path = os.path.join(project_root, "template.html")
-    content_index_path = os.path.join(project_root, "content", "index.md")
-    public_index_path = os.path.join(public_dir, "index.html")
-    
+
     print("=" * 60)
     print("Starting Static Site Generator")
+    print(f"Base path: {basepath}")
     print("=" * 60)
     
-    # Copy static files to public directory
+    # Copy static files to docs directory
     print("\n1. Copying static files...")
-    copy_dir(static_dir, public_dir)
+    copy_dir(static_dir, docs_dir)
     
     print("\n2. Static files copied successfully!")
     
     # Generate the main page
     print("\n3. Generating pages...")
-    generate_pages_recursive(os.path.join(project_root, "content"), template_path, public_dir)
+    generate_pages_recursive(os.path.join(project_root, "content"), template_path, docs_dir, basepath)
     
     print("\n4. Pages generated successfully!")
     print("=" * 60)

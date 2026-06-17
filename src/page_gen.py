@@ -35,7 +35,7 @@ def extract_title(markdown):
     raise ValueError("No h1 header found in markdown")
 
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath="/"):
     """
     Generate an HTML page from markdown using a template.
     
@@ -43,6 +43,7 @@ def generate_page(from_path, template_path, dest_path):
         from_path: Path to the markdown file
         template_path: Path to the HTML template file
         dest_path: Path where the generated HTML should be written
+        basepath: Base path for site URLs (default: "/")
         
     Prints a message showing the generation process.
     Creates any necessary directories.
@@ -67,6 +68,10 @@ def generate_page(from_path, template_path, dest_path):
     # Replace placeholders in template
     page_content = template_content.replace("{{ Title }}", title)
     page_content = page_content.replace("{{ Content }}", html_content)
+
+    # Replace href and src attributes with basepath
+    page_content = page_content.replace('href="/', f'href="{basepath}')
+    page_content = page_content.replace('src="/', f'src="{basepath}')
     
     # Create directories if they don't exist
     dest_dir = os.path.dirname(dest_path)
@@ -78,14 +83,15 @@ def generate_page(from_path, template_path, dest_path):
         f.write(page_content)
 
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath="/"):
     """
     Recursively generate HTML pages from markdown files in a directory.
     
     Args:
         dir_path_content: Path to the content directory containing markdown files
         template_path: Path to the HTML template file
-        dest_dir_path: Path to the destination directory for generated HTML files   
+        dest_dir_path: Path to the destination directory for generated HTML files
+        basepath: Base path for site URLs (default: "/")
     
     """
     # Convert string paths to Path objects
@@ -96,7 +102,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
         if entry.is_file() and entry.suffix == '.md':
             relative_path = entry.relative_to(content_path).with_suffix('.html')
             dest_file = dest_path_obj / relative_path
-            generate_page(str(entry), template_path, str(dest_file))
+            generate_page(str(entry), template_path, str(dest_file), basepath)
         elif entry.is_dir():
             next_dest = dest_path_obj / entry.name
-            generate_pages_recursive(str(entry), template_path, str(next_dest))
+            generate_pages_recursive(str(entry), template_path, str(next_dest), basepath)
