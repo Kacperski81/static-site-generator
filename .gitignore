@@ -1,5 +1,5 @@
-.venv/
 __pycache__/
+.venv/
 *.pyc
 *.pyo
 *.egg-info/
@@ -7,3 +7,5 @@ dist/
 build/
 .DS_Store
 .env
+.pytest_cache/
+
